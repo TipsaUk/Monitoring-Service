@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="schema/create-schema.xml" relativeToChangelogFile="true"/>
+    <include file="sequence/create-sequence.xml" relativeToChangelogFile="true"/>
+    <include file="table/create-meter-table.xml" relativeToChangelogFile="true"/>
+    <include file="table/create-user-table.xml" relativeToChangelogFile="true"/>
+    <include file="table/create-meter_value-table.xml" relativeToChangelogFile="true"/>
+    <include file="table/create-user_action-table.xml" relativeToChangelogFile="true"/>
+    <include file="table/create-foreign-key.xml" relativeToChangelogFile="true"/>
+    <include file="initial-data/insert_data_user_table.xml" relativeToChangelogFile="true"/>
+    <include file="initial-data/insert_data_meter_table.xml" relativeToChangelogFile="true"/>
+
+
+</databaseChangeLog>

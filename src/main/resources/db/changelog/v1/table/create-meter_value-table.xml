@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="create-meter-value-table" author="Andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="monitoring" tableName="meter_value"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="monitoring" tableName="meter_value">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date_value" type="date" />
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="meter_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="addMeterValueSequenceToId" author="Andrey">
+        <addDefaultValue schemaName="monitoring" tableName="meter_value" columnName="id"
+                         columnDataType="bigint" defaultValueComputed="nextval('monitoring.meter_value_id_seq')"/>
+    </changeSet>
+
+</databaseChangeLog>

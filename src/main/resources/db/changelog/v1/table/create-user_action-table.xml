@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="createUserActionTable" author="Andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists schemaName="monitoring" tableName="user_action"/>
+            </not>
+        </preConditions>
+        <createTable schemaName="monitoring" tableName="user_action">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="time_action" type="timestamp(6)"/>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="addUserActionSequenceToId" author="Andrey">
+        <addDefaultValue schemaName="monitoring" tableName="user_action" columnName="id"
+                         columnDataType="bigint" defaultValueComputed="nextval('monitoring.user_action_id_seq')"/>
+    </changeSet>
+
+</databaseChangeLog>

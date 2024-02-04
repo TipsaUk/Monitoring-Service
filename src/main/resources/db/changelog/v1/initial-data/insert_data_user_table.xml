@@ -1,0 +1,18 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="addAdminUser" author="Andrey">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*)
+                                         FROM monitoring.user</sqlCheck>
+        </preConditions>
+        <insert schemaName="monitoring" tableName="user">
+            <column name="nic_name" value="admin"/>
+            <column name="password" value="123"/>
+            <column name="role" value="ADMINISTRATOR"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

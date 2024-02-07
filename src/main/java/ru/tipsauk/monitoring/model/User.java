@@ -15,6 +15,9 @@ import java.util.Map;
 @Setter
 public class User {
 
+    /** id пользователя в системе. */
+    private long id;
+
     /** Имя пользователя в системе. */
     private String nickName;
 
@@ -25,10 +28,10 @@ public class User {
     private UserRole role;
 
     /** Показания счетчиков пользователя. */
-    private Map<LocalDate, MeterValue> indications = new HashMap<>();
+    private final Map<LocalDate, MeterValue> indications = new HashMap<>();
 
     /** Действия пользователя в системе. */
-    private Map<LocalDateTime, UserAction> userActions = new HashMap<>();
+    private final Map<LocalDateTime, UserAction> userActions = new HashMap<>();
 
     /**
      * Конструктор для создания объекта пользователя с указанными параметрами.
@@ -44,13 +47,21 @@ public class User {
         addUserAction(UserActionType.SIGN_UP, "");
     }
 
+    public User(long id, String nickName, String password, UserRole role) {
+        this.id = id;
+        this.nickName = nickName;
+        this.password = password;
+        this.role = role;
+        addUserAction(UserActionType.SIGN_UP, "");
+    }
+
     /**
      * Добавляет показания счетчика для пользователя на указанную дату.
      *
      * @param datValue   Дата, на которую добавляются показания (начало месяца).
      * @param meterValue Показания счетчика.
      */
-    public void addValueToUser(LocalDate datValue, MeterValue meterValue) {
+    public void addMeterValueToUser(LocalDate datValue, MeterValue meterValue) {
        indications.put(datValue.withDayOfMonth(1), meterValue);
     }
 
@@ -66,6 +77,15 @@ public class User {
         if (action == UserActionType.ERROR) {
             System.out.println(description);
         }
+    }
+
+    /**
+     * Проверяет, является ли пользователь администратором.
+     *
+     * @return true, если пользователь является администратором, иначе false.
+     */
+    public boolean isUserAdministrator() {
+        return role == UserRole.ADMINISTRATOR;
     }
 
 }

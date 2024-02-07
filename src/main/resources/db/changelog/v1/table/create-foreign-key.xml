@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="create-foreign-key-mv-user" author="Andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="monitoring" foreignKeyName="fk_meter_value_user"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableSchemaName="monitoring"
+                                 baseTableName="meter_value"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_meter_value_user"
+                                 referencedTableSchemaName="monitoring"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 deleteCascade="true"/>
+    </changeSet>
+    <changeSet id="create-foreign-key-mv-meter" author="Andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="monitoring" foreignKeyName="fk_meter_value_meter"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableSchemaName="monitoring"
+                                 baseTableName="meter_value"
+                                 baseColumnNames="meter_id"
+                                 constraintName="fk_meter_value_meter"
+                                 referencedTableSchemaName="monitoring"
+                                 referencedTableName="meter"
+                                 referencedColumnNames="id"
+                                 deleteCascade="true"/>
+    </changeSet>
+    <changeSet id="create-foreign-key-ua-user" author="Andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists schemaName="monitoring" foreignKeyName="fk_user_action_user"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseTableSchemaName="monitoring"
+                                 baseTableName="user_action"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_user_action_user"
+                                 referencedTableSchemaName="monitoring"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 deleteCascade="true"/>
+    </changeSet>
+
+</databaseChangeLog>

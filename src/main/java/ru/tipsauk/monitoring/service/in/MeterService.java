@@ -1,89 +1,65 @@
 package ru.tipsauk.monitoring.service.in;
 
-
-import ru.tipsauk.monitoring.model.*;
+import ru.tipsauk.monitoring.model.Meter;
+import ru.tipsauk.monitoring.model.MeterValue;
+import ru.tipsauk.monitoring.model.User;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Класс сервиса для управления показаниями счетчиков.
+ * Интерфейс сервиса для управления счетчиками и их показаниями.
  */
-public class MeterService {
+public interface MeterService {
 
     /**
-     * Передает показания счетчика для указанного пользователя.
+     * Получает все доступные счетчики.
      *
-     * @param user  Пользователь, для которого передаются показания.
-     * @param meter Счетчик, для которого передаются показания.
-     * @param value Передаваемое значение показаний счетчика.
-     * @return true, если передача показаний прошла успешно, иначе false.
+     * @return множество объектов Meter, представляющих все доступные счетчики.
      */
-    public boolean transmitMeterValue(User user, Meter meter, int value) {
-        MeterValue actualValue = getActualValueMeter(user);
-        if (actualValue.getMeterValues().containsKey(meter)) {
-            user.addUserAction(UserActionType.ERROR,"За текущий месяц показания по "
-                    + meter.getName() + " уже переданы!");
-            return false;
-        }
-        actualValue.addMeterValue(meter, value);
-        user.addUserAction(UserActionType.TRANSMIT_VALUES, meter.getName());
-        return true;
-    }
+    Set<Meter> getAllMeters();
 
     /**
-     * Получает показания счетчика для указанного пользователя на указанную дату.
+     * Передает показания счетчика для конкретного пользователя и счетчика.
      *
-     * @param user      Пользователь, для которого запрашиваются показания.
-     * @param dateValue Дата, на которую запрашиваются показания.
-     * @return Показания счетчика на указанную дату.
+     * @param user  пользователь, для которого передаются показания счетчика.
+     * @param meter счетчик, для которого передаются показания.
+     * @param value значение показания счетчика.
+     * @return true, если передача была успешной, в противном случае - false.
      */
-    public MeterValue getValueMeter(User user, LocalDate dateValue) {
-        user.addUserAction(UserActionType.GETTING_VALUES, "На дату: " + dateValue);
-        MeterValue meterValue = user.getIndications().get(dateValue);
-        return meterValue == null ? new MeterValue() : meterValue;
-    }
+    boolean transmitMeterValue(User user, Meter meter, int value);
 
     /**
-     * Получает актуальные показания счетчика для указанного пользователя.
+     * Получает показания счетчика для конкретного пользователя и даты.
      *
-     * @param user Пользователь, для которого запрашиваются актуальные показания.
-     * @return Актуальные показания счетчика.
+     * @param user      пользователь, для которого получаются показания счетчика.
+     * @param dateValue дата, для которой получаются показания.
+     * @return объект MeterValue, представляющий показания счетчика для указанного пользователя и даты.
      */
-    private MeterValue getActualValueMeter(User user) {
-        LocalDate actualDate = LocalDate.now().withDayOfMonth(1);
-        MeterValue actualValue = user.getIndications().get(actualDate);
-        if (actualValue == null) {
-            actualValue = new MeterValue(actualDate);
-            user.addValueToUser(actualDate, actualValue);
-        }
-        return actualValue;
-    }
+    MeterValue getValueMeter(User user, LocalDate dateValue);
 
     /**
-     * Получает последние (актальные) показания счетчика для указанного пользователя.
+     * Получает последние показания счетчика для конкретного пользователя.
      *
-     * @param user Пользователь, для которого запрашиваются последние показания.
-     * @return Последние показания счетчика.
+     * @param user пользователь, для которого получаются последние показания счетчика.
+     * @return объект MeterValue, представляющий последние показания счетчика для указанного пользователя.
      */
-    public MeterValue getLastValueMeter(User user) {
-        Map.Entry<LocalDate, MeterValue> maxEntry = user.getIndications()
-                .entrySet()
-                .stream()
-                .max(Map.Entry.comparingByKey())
-                .orElse(null);
-        return (maxEntry == null) ? new MeterValue() : maxEntry.getValue();
-    }
+    MeterValue getLastValueMeter(User user);
 
     /**
-     * Получает историю показаний счетчика для указанного пользователя.
+     * Получает историю показаний счетчика для конкретного пользователя.
      *
-     * @param user Пользователь, для которого запрашивается история показаний.
-     * @return История показаний счетчика в виде упорядоченного TreeSet.
+     * @param user пользователь, для которого получается история показаний счетчика.
+     * @return TreeSet объектов MeterValue, представляющих историю показаний счетчика для указанного пользователя.
      */
-    public TreeSet<MeterValue> getValueMeterHistory(User user) {
-        return new TreeSet<>(user.getIndications().values());
-    }
+    TreeSet<MeterValue> getValueMeterHistory(User user);
+
+    /**
+     * Добавляет новый счетчик.
+     *
+     * @param meter новый счетчик для добавления.
+     */
+    void addNewMeter(Meter meter);
 
 }

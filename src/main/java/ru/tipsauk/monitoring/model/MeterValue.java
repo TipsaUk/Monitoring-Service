@@ -1,7 +1,6 @@
 package ru.tipsauk.monitoring.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -13,14 +12,13 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-@NoArgsConstructor
 public class MeterValue implements Comparable<MeterValue> {
 
     /** Дата (месяц) показаний. */
-    private LocalDate dateValue = LocalDate.now().withDayOfMonth(1);
+    private final LocalDate dateValue;
 
     /** Наименование счетчика. */
-    private HashMap<Meter, Integer> meterValues = new HashMap<>();
+    private final HashMap<Meter, Integer> meterValues = new HashMap<>();
 
     /**
      * Конструктор для создания объекта пользователя с указанными параметрами.
@@ -37,7 +35,7 @@ public class MeterValue implements Comparable<MeterValue> {
      * @param meter Вид счетчика.
      * @param value Показания счетчика.
      */
-    public void addMeterValue(Meter meter, Integer value) {
+    public void addMeterReading(Meter meter, Integer value) {
         meterValues.put(meter, value);
     }
 

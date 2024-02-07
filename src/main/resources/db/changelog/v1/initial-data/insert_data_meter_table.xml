@@ -1,0 +1,22 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+    <changeSet id="addMeters" author="Andrey">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*)
+                                         FROM monitoring.meter</sqlCheck>
+        </preConditions>
+        <insert schemaName="monitoring" tableName="meter">
+            <column name="name" value="Счетчик горячей воды"/>
+        </insert>
+        <insert schemaName="monitoring" tableName="meter">
+            <column name="name" value="Счетчик холодной воды"/>
+        </insert>
+        <insert schemaName="monitoring" tableName="meter">
+            <column name="name" value="Счетчик отопления"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

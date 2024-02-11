@@ -50,7 +50,7 @@ public class ConsoleMeterActions {
             System.out.println("Введено пустое имя!");
             return;
         }
-        meterService.addNewMeter(new Meter(nameMeter));
+        meterService.addNewMeter(nameMeter);
         System.out.println("Новый вид счетчика успешно добавлен!");
     }
 

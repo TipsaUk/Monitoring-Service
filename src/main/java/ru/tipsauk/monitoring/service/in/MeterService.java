@@ -31,6 +31,16 @@ public interface MeterService {
     boolean transmitMeterValue(User user, Meter meter, int value);
 
     /**
+     * Передает показания счетчика для конкретного пользователя и счетчика (для вэб версии).
+     *
+     * @param user  пользователь, для которого передаются показания счетчика.
+     * @param nameMeter имя счетчика, для которого передаются показания.
+     * @param value значение показания счетчика.
+     * @return true, если передача была успешной, в противном случае - false.
+     */
+    boolean transmitMeterValueWeb(User user, String nameMeter, int value);
+
+    /**
      * Получает показания счетчика для конкретного пользователя и даты.
      *
      * @param user      пользователь, для которого получаются показания счетчика.
@@ -58,8 +68,8 @@ public interface MeterService {
     /**
      * Добавляет новый счетчик.
      *
-     * @param meter новый счетчик для добавления.
+     * @param nameMeter имя нового счетчика для добавления.
      */
-    void addNewMeter(Meter meter);
+    boolean addNewMeter(String nameMeter);
 
 }

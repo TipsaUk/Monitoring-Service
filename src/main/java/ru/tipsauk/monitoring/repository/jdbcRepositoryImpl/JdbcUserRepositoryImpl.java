@@ -79,6 +79,11 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     }
 
     public PreparedStatement setPreparedStatement(String sql) throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Ошибка инициализации драйвера: " + e.getMessage());
+        }
         Connection connection = getConnection();
         return connection.prepareStatement(sql);
     }

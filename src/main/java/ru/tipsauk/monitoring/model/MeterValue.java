@@ -1,24 +1,26 @@
 package ru.tipsauk.monitoring.model;
 
-import lombok.Getter;
-import lombok.Setter;
+//import lombok.Getter;
+//import lombok.NoArgsConstructor;
+//import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * Класс, сущности для хранения показаний счетчиков.
  */
-@Getter
-@Setter
+//@Getter
+//@Setter
 public class MeterValue implements Comparable<MeterValue> {
 
     /** Дата (месяц) показаний. */
     private final LocalDate dateValue;
 
     /** Наименование счетчика. */
-    private final HashMap<Meter, Integer> meterValues = new HashMap<>();
+    private final Map<Meter, Integer> meterValues = new HashMap<>();
 
     /**
      * Конструктор для создания объекта пользователя с указанными параметрами.
@@ -27,6 +29,14 @@ public class MeterValue implements Comparable<MeterValue> {
      */
     public MeterValue(LocalDate dateValue) {
         this.dateValue = dateValue.withDayOfMonth(1);
+    }
+
+    public LocalDate getDateValue() {
+        return dateValue;
+    }
+
+    public Map<Meter, Integer> getMeterValues() {
+        return meterValues;
     }
 
     /**

@@ -74,7 +74,7 @@ public class ConsoleMeterReadings {
      */
     public void consoleGetMeterValues(User user) {
         LocalDate inputDate = consoleInputDate();
-        HashMap<Meter, Integer> meterValues =
+        Map<Meter, Integer> meterValues =
                 meterService.getValueMeter(user, inputDate).getMeterValues();
         System.out.println("Показания счетчиков за " + inputDate);
         for (Map.Entry<Meter, Integer> entry : meterValues.entrySet()) {
@@ -111,7 +111,7 @@ public class ConsoleMeterReadings {
         if (meterValue == null) {
             return;
         }
-        HashMap<Meter, Integer> meterValues = meterValue.getMeterValues();
+        Map<Meter, Integer> meterValues = meterValue.getMeterValues();
         System.out.println("Актуальные показания счетчиков:");
         for (Map.Entry<Meter, Integer> entry : meterValues.entrySet()) {
             System.out.println(entry.getKey().getName() + ": " + entry.getValue());

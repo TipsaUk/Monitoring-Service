@@ -1,7 +1,8 @@
 package ru.tipsauk.monitoring.model;
 
-import lombok.Getter;
-import lombok.Setter;
+//import lombok.Getter;
+//import lombok.NoArgsConstructor;
+//import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,8 +12,9 @@ import java.util.Map;
 /**
  * Класс, сущности пользователя системы.
  */
-@Getter
-@Setter
+//@Getter
+//@Setter
+//@NoArgsConstructor
 public class User {
 
     /** id пользователя в системе. */
@@ -53,6 +55,49 @@ public class User {
         this.password = password;
         this.role = role;
         addUserAction(UserActionType.SIGN_UP, "");
+    }
+
+    public User() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    public Map<LocalDate, MeterValue> getIndications() {
+        return indications;
+    }
+
+    public Map<LocalDateTime, UserAction> getUserActions() {
+        return userActions;
     }
 
     /**

@@ -14,28 +14,25 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Реализация интерфейса MeterService с использованием базы данных для консольной версии приложения.
+ * Реализация интерфейса MeterService с использованием базы данных для web-версии приложения.
  */
-public class DatabaseMeterServiceImpl implements MeterService {
+public class DatabaseWebMeterServiceImpl implements MeterService {
 
     private final MeterRepository meterRepository;
 
     private final MeterValueRepository meterValueRepository;
-
-    private final UserActionRepository userActionRepository;
 
     /**
      * Конструктор класса.
      *
      * @param meterRepository        репозиторий счетчиков.
      * @param meterValueRepository   репозиторий показаний счетчиков.
-     * @param userActionRepository   репозиторий действий пользователей.
      */
-    public DatabaseMeterServiceImpl(MeterRepository meterRepository
-            , MeterValueRepository meterValueRepository, UserActionRepository userActionRepository) {
+    public DatabaseWebMeterServiceImpl(MeterRepository meterRepository
+            , MeterValueRepository meterValueRepository) {
         this.meterRepository = meterRepository;
         this.meterValueRepository = meterValueRepository;
-        this.userActionRepository = userActionRepository;
+
     }
 
     /**
@@ -51,6 +48,16 @@ public class DatabaseMeterServiceImpl implements MeterService {
      */
     @Override
     public boolean transmitMeterValue(User user, Meter meter, int value) {
+        // не используется в данной реализации
+        return false;
+    }
+
+    @Override
+    public boolean transmitMeterValueWeb(User user, String nameMeter, int value) {
+        Meter meter = meterRepository.getMeterByName(nameMeter);
+        if (meter == null) {
+            return false;
+        }
         MeterValue actualValue = meterValueRepository
                 .getValueMeterByDateAndUser(LocalDate.now().withDayOfMonth(1), user);
         if (actualValue.getMeterValues().containsKey(meter)) {
@@ -58,14 +65,7 @@ public class DatabaseMeterServiceImpl implements MeterService {
                     + meter.getName() + " уже переданы!");
             return false;
         }
-        userActionRepository.saveUserAction(user, UserActionType.TRANSMIT_VALUES, meter.getName());
         return meterValueRepository.saveMeterValue(meter, value, user);
-    }
-
-    @Override
-    public boolean transmitMeterValueWeb(User user, String nameMeter, int value) {
-        // не используется в данной реализации
-        return false;
     }
 
     /**
@@ -73,7 +73,6 @@ public class DatabaseMeterServiceImpl implements MeterService {
      */
     @Override
     public MeterValue getValueMeter(User user, LocalDate dateValue) {
-        userActionRepository.saveUserAction(user, UserActionType.GETTING_VALUES, "На дату: " + dateValue);
         MeterValue meterValue = meterValueRepository.getValueMeterByDateAndUser(dateValue, user);
         return meterValue == null ? new MeterValue(LocalDate.now()) : meterValue;
     }

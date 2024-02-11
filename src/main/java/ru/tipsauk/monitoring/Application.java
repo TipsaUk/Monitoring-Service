@@ -25,19 +25,19 @@ public class Application {
      */
     public static void main(String[] args) {
 
-        ApplicationConfig config = new ApplicationConfig();
-        MeterRepository meterRepository = new JdbcMeterRepositoryImpl(config);
-        MeterValueRepository meterValueRepository = new JdbcMeterValueRepository(config);
-        UserRepository userRepository = new JdbcUserRepositoryImpl(config);
-        UserActionRepository userActionRepository = new JdbcUserActionRepositoryImpl(config);
+//        ApplicationConfig config = new ApplicationConfig();
+//        MeterRepository meterRepository = new JdbcMeterRepositoryImpl(config);
+//        MeterValueRepository meterValueRepository = new JdbcMeterValueRepository(config);
+//        UserRepository userRepository = new JdbcUserRepositoryImpl(config);
+//        UserActionRepository userActionRepository = new JdbcUserActionRepositoryImpl(config);
         //  Закоментированы классы реализующие работу программы с коллекциями без использования базы данных
         //  UserService userService = new CollectionUserServiceImpl();
         //  MeterService meterService = new CollectionMeterServiceImpl();
-        UserService userService = new DatabaseUserServiceImpl(userRepository, userActionRepository);
-        MeterService meterService = new DatabaseMeterServiceImpl(meterRepository
-                                                , meterValueRepository, userActionRepository);
-        Console console = new Console(userService, meterService);
-        console.run();
+//        UserService userService = new DatabaseUserServiceImpl(userRepository, userActionRepository);
+//        MeterService meterService = new DatabaseMeterServiceImpl(meterRepository
+//                                                , meterValueRepository, userActionRepository);
+//        Console console = new Console(userService, meterService);
+//        console.run();
     }
 
 }

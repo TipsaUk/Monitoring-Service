@@ -43,6 +43,12 @@ public class CollectionMeterServiceImpl implements MeterService {
         return true;
     }
 
+    @Override
+    public boolean transmitMeterValueWeb(User user, String nameMeter, int value) {
+        // не используется в данной реализации
+        return false;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -88,11 +94,13 @@ public class CollectionMeterServiceImpl implements MeterService {
      * {@inheritDoc}
      */
     @Override
-    public void addNewMeter(Meter meter) {
+    public boolean addNewMeter(String nameMeter) {
+        Meter meter = new Meter(nameMeter);
         if (meters.contains(meter)) {
             System.out.println("Данный счетчик уже добавлен!");
-            return;
+            return false;
         }
         meters.add(meter);
+        return true;
     }
 }

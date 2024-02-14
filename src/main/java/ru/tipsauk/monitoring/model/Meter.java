@@ -1,16 +1,17 @@
 package ru.tipsauk.monitoring.model;
 
-
-import lombok.Getter;
-import lombok.Setter;
+//import lombok.Getter;
+//import lombok.NoArgsConstructor;
+//import lombok.Setter;
 
 import java.util.Objects;
 
 /**
  * Класс, сущности вида счетчика в системе.
  */
-@Getter
-@Setter
+//@Getter
+//@Setter
+//@NoArgsConstructor
 public class Meter {
 
     /** id счетчика в системе. */
@@ -19,12 +20,31 @@ public class Meter {
     /** Наименование счетчика. */
     private String name;
 
+    public Meter() {
+    }
+
     public Meter(String name) {
         this.name = name;
     }
 
     public Meter(long id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -45,4 +65,6 @@ public class Meter {
     public String toString() {
         return name;
     }
+
+
 }

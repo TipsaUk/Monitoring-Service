@@ -7,12 +7,13 @@
     <groupId>org.example</groupId>
     <artifactId>Monitoring-Service</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
 
     <properties>
         <maven.compiler.source>20</maven.compiler.source>
         <maven.compiler.target>20</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.projectlombok.version>1.18.28</org.projectlombok.version>
+        <org.projectlombok.version>1.18.30</org.projectlombok.version>
         <org.junit.jupiter.version>5.9.3</org.junit.jupiter.version>
         <org.mockito.version>5.2.0</org.mockito.version>
         <org.assertj.version>3.24.2</org.assertj.version>
@@ -20,16 +21,25 @@
         <org.liquibase.version>4.24.0</org.liquibase.version>
         <org.liquibase-plugin.version>4.25.0</org.liquibase-plugin.version>
         <org.testcontainers.version>1.19.3</org.testcontainers.version>
-
+        <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
+        <jackson.version>2.15.3</jackson.version>
+        <aspectj.version>1.9.7</aspectj.version>
+        <plugin.war.version>3.3.1</plugin.war.version>
+        <plugin.aspectj.version>1.14.0</plugin.aspectj.version>
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
+        <jakarta.validation.version>3.0.2</jakarta.validation.version>
+        <hibernate-validator.version>7.0.2.Final</hibernate-validator.version>
+        <jackson.datatype.version>2.15.2</jackson.datatype.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${org.projectlombok.version}</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        Отключен из-за проблем с совместимостью с aspectj-maven-plugin-->
+<!--        <dependency>-->
+<!--            <groupId>org.projectlombok</groupId>-->
+<!--            <artifactId>lombok</artifactId>-->
+<!--            <version>${org.projectlombok.version}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
@@ -70,6 +80,48 @@
             <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${jakarta.servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta.validation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.datatype.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -85,6 +137,28 @@
                     <execution>
                         <goals>
                             <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${plugin.war.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>${plugin.aspectj.version}</version>
+                <configuration>
+                    <complianceLevel>16</complianceLevel>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
                         </goals>
                     </execution>
                 </executions>

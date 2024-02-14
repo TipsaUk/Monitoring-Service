@@ -13,7 +13,7 @@ public interface MeterRepository {
      *
      * @param meter объект счетчика, который нужно сохранить.
      */
-    void saveMeter(Meter meter);
+    boolean saveMeter(Meter meter);
 
     /**
      * Получает все счетчики из БД.
@@ -21,4 +21,7 @@ public interface MeterRepository {
      * @return множество счетчиков.
      */
     Set<Meter> getAllMeters();
+
+    Meter getMeterByName(String name);
+
 }

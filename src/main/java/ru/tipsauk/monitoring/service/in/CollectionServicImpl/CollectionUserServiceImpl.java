@@ -61,6 +61,12 @@ public class CollectionUserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
+    public String signInWithSession(String name, String password) {
+        // не используется в данной реализации
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -74,12 +80,30 @@ public class CollectionUserServiceImpl implements UserService {
         sessionUser = null;
     }
 
+    @Override
+    public boolean signOutBySessionId(String sessionId) {
+        // не используется в данной реализации
+        return false;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public User getUserByName(String name) {
         return users.get(name);
+    }
+
+    @Override
+    public User getUserBySessionId(String sessionId) {
+        // не используется в данной реализации
+        return null;
+    }
+
+    @Override
+    public String getUserSessionId(String name) {
+        // не используется в данной реализации
+        return null;
     }
 
     /**

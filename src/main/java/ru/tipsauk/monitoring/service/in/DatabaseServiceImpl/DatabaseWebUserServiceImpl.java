@@ -1,5 +1,6 @@
 package ru.tipsauk.monitoring.service.in.DatabaseServiceImpl;
 
+import ru.tipsauk.monitoring.annotations.UserAudit;
 import ru.tipsauk.monitoring.model.User;
 import ru.tipsauk.monitoring.model.UserAction;
 import ru.tipsauk.monitoring.model.UserActionType;
@@ -8,20 +9,19 @@ import ru.tipsauk.monitoring.repository.UserActionRepository;
 import ru.tipsauk.monitoring.repository.UserRepository;
 import ru.tipsauk.monitoring.service.in.UserService;
 
-import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
- * Реализация интерфейса UserService с использованием базы данных для консольной версии приложения.
+ * Реализация интерфейса UserService с использованием базы данных для web-версии приложения.
  */
-public class DatabaseUserServiceImpl implements UserService {
+public class DatabaseWebUserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
     private final UserActionRepository userActionRepository;
 
-    /** Авторизованный пользователь в текущей сессии. */
-    private User sessionUser;
+    /** Авторизованный пользователи системы. */
+    private final Map<String, User> userSessions = new HashMap<>();
 
     /**
      * Конструктор класса.
@@ -29,9 +29,9 @@ public class DatabaseUserServiceImpl implements UserService {
      * @param userRepository        репозиторий пользователей.
      * @param userActionRepository репозиторий действий пользователей.
      */
-    public DatabaseUserServiceImpl(UserRepository userRepository, UserActionRepository userActionRepository) {
-        this.userRepository = userRepository;
-        this.userActionRepository = userActionRepository;
+    public DatabaseWebUserServiceImpl(UserRepository userRepository, UserActionRepository userActionRepository) {
+         this.userRepository = userRepository;
+         this.userActionRepository = userActionRepository;
     }
 
     /**
@@ -39,8 +39,7 @@ public class DatabaseUserServiceImpl implements UserService {
      */
     @Override
     public boolean signUp(String nickName, String password) {
-        if (userRepository.getUserByName(nickName) != null) {
-            System.out.println("Пользователь с таким именем уже зарегистрирован!");
+        if (hasSystemUserName(nickName)) {
             return false;
         }
         if (password.equals("")) {
@@ -56,24 +55,24 @@ public class DatabaseUserServiceImpl implements UserService {
      */
     @Override
     public boolean signIn(String name, String password) {
-        User user = userRepository.getUserByName(name);
-        if (user == null) {
-            System.out.println("Пользователь с таким именем не зарегистрирован!");
-            return false;
-        }
-        if (!user.getPassword().equals(password)) {
-            user.addUserAction(UserActionType.ERROR,"Не верный пароль!");
-            return false;
-        }
-        sessionUser = user;
-        userActionRepository.saveUserAction(user, UserActionType.SIGN_IN, "");
+       // не используется в данной реализации
         return true;
     }
 
     @Override
     public String signInWithSession(String name, String password) {
-        // не используется в данной реализации
-        return null;
+        User user = userRepository.getUserByName(name);
+        if (user == null) {
+            System.out.println("Пользователь с таким именем не зарегистрирован!");
+            return null;
+        }
+        if (!user.getPassword().equals(password)) {
+            user.addUserAction(UserActionType.ERROR,"Не верный пароль!");
+            return null;
+        }
+        String sessionId = UUID.randomUUID().toString();
+        userSessions.put(sessionId, user);
+        return sessionId;
     }
 
     /**
@@ -81,18 +80,16 @@ public class DatabaseUserServiceImpl implements UserService {
      */
     @Override
     public void signOut() {
-        if (sessionUser == null) {
-            System.out.println("Пользователь не авторизован!");
-            return;
-        }
-        userActionRepository.saveUserAction(sessionUser, UserActionType.SIGN_OUT, "");
-        sessionUser = null;
+        // не используется в данной реализации
     }
 
     @Override
     public boolean signOutBySessionId(String sessionId) {
-        // не используется в данной реализации
-        return false;
+        if (!userSessions.containsKey(sessionId)) {
+            return false;
+        }
+        userSessions.remove(sessionId);
+        return true;
     }
 
     /**
@@ -103,15 +100,24 @@ public class DatabaseUserServiceImpl implements UserService {
         return userRepository.getUserByName(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public User getUserBySessionId(String sessionId) {
-        return null;
+        return userSessions.get(sessionId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getUserSessionId(String name) {
-        // не используется в данной реализации
-        return null;
+        Optional<String> matchingKey = userSessions.entrySet().stream()
+                .filter(entry -> name.equals(entry.getValue().getNickName()))
+                .map(Map.Entry::getKey)
+                .findFirst();
+        return matchingKey.orElse(null);
     }
 
     /**
@@ -127,7 +133,8 @@ public class DatabaseUserServiceImpl implements UserService {
      */
     @Override
     public User getSessionUser() {
-        return sessionUser;
+        // не используется в данной реализации
+        return null;
     }
 
     /**
@@ -136,5 +143,13 @@ public class DatabaseUserServiceImpl implements UserService {
     @Override
     public TreeSet<UserAction> getUserActions(User user, UserActionType userAction) {
         return userActionRepository.getByUserAndUserAction(user, userAction);
+    }
+
+    private boolean hasSystemUserName(String nickName) {
+        if (userRepository.getUserByName(nickName) != null) {
+            System.out.println("Пользователь с таким именем уже зарегистрирован!");
+            return true;
+        }
+        return false;
     }
 }

@@ -1,15 +1,15 @@
-package ru.tipsauk.monitoring.handler.mapper;
+package ru.tipsauk.monitoring.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import ru.tipsauk.monitoring.dto.UserActionDto;
 import ru.tipsauk.monitoring.model.UserAction;
 
-@Mapper
+/**
+ * Интерфейс-маппер для преобразования между сущностью UserAction и DTO UserActionDto.
+ */
+@Mapper(componentModel = "spring")
 public interface UserActionMapper {
-
-    UserActionMapper INSTANCE = Mappers.getMapper(UserActionMapper.class);
 
     @Mapping(source = "timeAction", target = "timeAction")
     @Mapping(source = "action", target = "action")

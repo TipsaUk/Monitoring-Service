@@ -6,36 +6,37 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.junit.jupiter.api.*;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.tipsauk.monitoring.config.ApplicationConfig;
+import ru.tipsauk.monitoring.MainWebAppInitializer;
+import ru.tipsauk.monitoring.config.AppConfig;
+import ru.tipsauk.monitoring.dto.MeterDto;
+import ru.tipsauk.monitoring.dto.MeterValueDto;
 import ru.tipsauk.monitoring.model.*;
-import ru.tipsauk.monitoring.repository.MeterRepository;
-import ru.tipsauk.monitoring.repository.MeterValueRepository;
-import ru.tipsauk.monitoring.repository.UserActionRepository;
-import ru.tipsauk.monitoring.repository.jdbcRepositoryImpl.JdbcMeterRepositoryImpl;
-import ru.tipsauk.monitoring.repository.jdbcRepositoryImpl.JdbcMeterValueRepository;
-import ru.tipsauk.monitoring.repository.jdbcRepositoryImpl.JdbcUserActionRepositoryImpl;
 import ru.tipsauk.monitoring.service.in.MeterService;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
+@SpringJUnitConfig
+@ContextConfiguration(classes = {MainWebAppInitializer.class, AppConfig.class})
 class DatabaseMeterServiceImplTest {
 
     @Container
-    private static final PostgreSQLContainer<?> SQLContainer = new PostgreSQLContainer<>("postgres:latest")
+    private static final PostgreSQLContainer<?> SQLContainer
+            = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("monitoring_service")
             .withUsername("monitoring")
             .withPassword("monitoring");
-    private static MeterService meterService;
+    private MeterService meterService;
 
     private static User user;
 
@@ -60,14 +61,6 @@ class DatabaseMeterServiceImplTest {
             liquibase.update("test");
             connection.close();
 
-            ApplicationConfig config = new ApplicationConfig(SQLContainer.getJdbcUrl()
-                    , SQLContainer.getUsername(), SQLContainer.getPassword());
-            MeterRepository meterRepository = new JdbcMeterRepositoryImpl(config);
-            MeterValueRepository meterValueRepository = new JdbcMeterValueRepository(config);
-            UserActionRepository userActionRepository = new JdbcUserActionRepositoryImpl(config);
-            meterService = new DatabaseMeterServiceImpl(meterRepository
-                    , meterValueRepository, userActionRepository);
-
             user = new User(1,"user", "123", UserRole.USER);
             meter = new Meter(1,"Счетчик горячей воды");
             meter2 = new Meter(2,"Счетчик холодной воды");
@@ -81,7 +74,7 @@ class DatabaseMeterServiceImplTest {
     @Test
     @DisplayName("Получение счетчиков")
     void getAllMeters_shouldReturnMeters() {
-        Set<Meter> allMeters = meterService.getAllMeters();
+        Set<MeterDto> allMeters = meterService.getAllMeters();
         assertThat(allMeters).isNotNull();
         assertThat(allMeters.isEmpty()).isFalse();
     }
@@ -96,7 +89,7 @@ class DatabaseMeterServiceImplTest {
     @DisplayName("Получение последних показаний")
     void getValueMeter_ValidDate() {
         LocalDate dateValue = LocalDate.now().withDayOfMonth(1);
-        MeterValue result = meterService.getValueMeter(user, dateValue);
+        MeterValueDto result = meterService.getValueMeter(user, dateValue);
         assertThat(result).isNotNull();
     }
 
@@ -104,14 +97,14 @@ class DatabaseMeterServiceImplTest {
     @DisplayName("Получение показаний за предыдущие периоды")
     void getValueMeter_InvalidDate() {
         meterService.transmitMeterValue(user, meter, 100);
-        MeterValue result = meterService.getValueMeter(user, LocalDate.now().minusMonths(1));
+        MeterValueDto result = meterService.getValueMeter(user, LocalDate.now().minusMonths(1));
         assertThat(result).isNotNull();
     }
 
     @Test
     @DisplayName("Получение последних показаний если не передавались")
     void getLastValueMeter_NoValues() {
-        MeterValue result = meterService.getLastValueMeter(user);
+        MeterValueDto result = meterService.getLastValueMeter(user);
         assertThat(result).isNotNull();
     }
 
@@ -122,8 +115,6 @@ class DatabaseMeterServiceImplTest {
         meterValue.addMeterReading(meter, 100);
         meterService.transmitMeterValue(user, meter, 100);
         meterService.transmitMeterValue(user, meter2, 200);
-//        TreeSet<MeterValue> result = meterService.getValueMeterHistory(user);
-//        assertThat(result).hasSize(1);
     }
 
     @Test
@@ -134,10 +125,7 @@ class DatabaseMeterServiceImplTest {
         meterValue.addMeterReading(meter2, 200);
         meterService.transmitMeterValue(user, meter, 100);
         meterService.transmitMeterValue(user, meter2, 200);
-        MeterValue result = meterService.getLastValueMeter(user);
-//        assertThat(result.getDateValue()).isEqualTo(meterValue.getDateValue());
-//        assertThat(result.getMeterValues().size()).isEqualTo(meterValue.getMeterValues().size());
-
+        MeterValueDto result = meterService.getLastValueMeter(user);
     }
 
 }

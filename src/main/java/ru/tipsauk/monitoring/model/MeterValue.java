@@ -1,9 +1,5 @@
 package ru.tipsauk.monitoring.model;
 
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +8,6 @@ import java.util.Objects;
 /**
  * Класс, сущности для хранения показаний счетчиков.
  */
-//@Getter
-//@Setter
 public class MeterValue implements Comparable<MeterValue> {
 
     /** Дата (месяц) показаний. */

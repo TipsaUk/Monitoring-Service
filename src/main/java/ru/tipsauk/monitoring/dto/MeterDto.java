@@ -1,5 +1,6 @@
 package ru.tipsauk.monitoring.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -11,6 +12,7 @@ public class MeterDto {
     /**
      * Имя счетчика.
      */
+    @Schema(description = "Имя счетчика")
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
 

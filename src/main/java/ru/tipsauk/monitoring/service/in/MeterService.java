@@ -1,7 +1,8 @@
 package ru.tipsauk.monitoring.service.in;
 
+import ru.tipsauk.monitoring.dto.MeterDto;
+import ru.tipsauk.monitoring.dto.MeterValueDto;
 import ru.tipsauk.monitoring.model.Meter;
-import ru.tipsauk.monitoring.model.MeterValue;
 import ru.tipsauk.monitoring.model.User;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ public interface MeterService {
      *
      * @return множество объектов Meter, представляющих все доступные счетчики.
      */
-    Set<Meter> getAllMeters();
+    Set<MeterDto> getAllMeters();
 
     /**
      * Передает показания счетчика для конкретного пользователя и счетчика.
@@ -34,11 +35,10 @@ public interface MeterService {
      * Передает показания счетчика для конкретного пользователя и счетчика (для вэб версии).
      *
      * @param user  пользователь, для которого передаются показания счетчика.
-     * @param nameMeter имя счетчика, для которого передаются показания.
-     * @param value значение показания счетчика.
+     * @param meterValueDto значения показаний счетчика.
      * @return true, если передача была успешной, в противном случае - false.
      */
-    boolean transmitMeterValueWeb(User user, String nameMeter, int value);
+    boolean transmitMeterValueWeb(User user, MeterValueDto meterValueDto);
 
     /**
      * Получает показания счетчика для конкретного пользователя и даты.
@@ -47,7 +47,7 @@ public interface MeterService {
      * @param dateValue дата, для которой получаются показания.
      * @return объект MeterValue, представляющий показания счетчика для указанного пользователя и даты.
      */
-    MeterValue getValueMeter(User user, LocalDate dateValue);
+    MeterValueDto getValueMeter(User user, LocalDate dateValue);
 
     /**
      * Получает последние показания счетчика для конкретного пользователя.
@@ -55,7 +55,7 @@ public interface MeterService {
      * @param user пользователь, для которого получаются последние показания счетчика.
      * @return объект MeterValue, представляющий последние показания счетчика для указанного пользователя.
      */
-    MeterValue getLastValueMeter(User user);
+    MeterValueDto getLastValueMeter(User user);
 
     /**
      * Получает историю показаний счетчика для конкретного пользователя.
@@ -63,7 +63,7 @@ public interface MeterService {
      * @param user пользователь, для которого получается история показаний счетчика.
      * @return TreeSet объектов MeterValue, представляющих историю показаний счетчика для указанного пользователя.
      */
-    TreeSet<MeterValue> getValueMeterHistory(User user);
+    TreeSet<MeterValueDto> getValueMeterHistory(User user);
 
     /**
      * Добавляет новый счетчик.

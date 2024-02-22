@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    username: monitoring
+    password: monitoring
+    url: jdbc:postgresql://localhost:5432/monitoring_service
+
+  liquibase:
+    enabled: false
+    change-log: classpath:db/changelog/changelog-master.xml
+    default-schema: liquibase

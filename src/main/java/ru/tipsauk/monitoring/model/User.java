@@ -1,20 +1,8 @@
 package ru.tipsauk.monitoring.model;
 
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Класс, сущности пользователя системы.
  */
-//@Getter
-//@Setter
-//@NoArgsConstructor
 public class User {
 
     /** id пользователя в системе. */
@@ -29,11 +17,6 @@ public class User {
     /** Роль пользователя. */
     private UserRole role;
 
-    /** Показания счетчиков пользователя. */
-    private final Map<LocalDate, MeterValue> indications = new HashMap<>();
-
-    /** Действия пользователя в системе. */
-    private final Map<LocalDateTime, UserAction> userActions = new HashMap<>();
 
     /**
      * Конструктор для создания объекта пользователя с указанными параметрами.
@@ -46,7 +29,6 @@ public class User {
         this.nickName = nickName;
         this.password = password;
         this.role = role;
-        addUserAction(UserActionType.SIGN_UP, "");
     }
 
     public User(long id, String nickName, String password, UserRole role) {
@@ -54,7 +36,6 @@ public class User {
         this.nickName = nickName;
         this.password = password;
         this.role = role;
-        addUserAction(UserActionType.SIGN_UP, "");
     }
 
     public User() {
@@ -92,37 +73,6 @@ public class User {
         this.role = role;
     }
 
-    public Map<LocalDate, MeterValue> getIndications() {
-        return indications;
-    }
-
-    public Map<LocalDateTime, UserAction> getUserActions() {
-        return userActions;
-    }
-
-    /**
-     * Добавляет показания счетчика для пользователя на указанную дату.
-     *
-     * @param datValue   Дата, на которую добавляются показания (начало месяца).
-     * @param meterValue Показания счетчика.
-     */
-    public void addMeterValueToUser(LocalDate datValue, MeterValue meterValue) {
-       indications.put(datValue.withDayOfMonth(1), meterValue);
-    }
-
-    /**
-     * Добавляет действие пользователя.
-     *
-     * @param action      Тип действия пользователя.
-     * @param description Описание действия.
-     */
-    public void addUserAction(UserActionType action, String description) {
-        userActions.put(LocalDateTime.now(),
-                new UserAction(LocalDateTime.now(), action, description));
-        if (action == UserActionType.ERROR) {
-            System.out.println(description);
-        }
-    }
 
     /**
      * Проверяет, является ли пользователь администратором.

@@ -22,6 +22,11 @@ public interface MeterRepository {
      */
     Set<Meter> getAllMeters();
 
+    /**
+     * Получает счетчик по имени из БД.
+     *
+     * @return - полученный счетчик.
+     */
     Meter getMeterByName(String name);
 
 }

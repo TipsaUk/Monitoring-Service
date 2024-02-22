@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.tipsauk.monitoring.config.ApplicationConfig;
 import ru.tipsauk.monitoring.model.User;
 import ru.tipsauk.monitoring.model.UserActionType;
 import ru.tipsauk.monitoring.model.UserRole;
@@ -58,11 +57,11 @@ class DatabaseUserServiceImplTest {
             liquibase.update("test");
             connection.close();
 
-            ApplicationConfig config = new ApplicationConfig(SQLContainer.getJdbcUrl()
-                    , SQLContainer.getUsername(), SQLContainer.getPassword());
-            UserRepository userRepository = new JdbcUserRepositoryImpl(config);
-            UserActionRepository userActionRepository = new JdbcUserActionRepositoryImpl(config);
-            userService = new DatabaseUserServiceImpl(userRepository, userActionRepository);
+//            ApplicationConfig config = new ApplicationConfig(SQLContainer.getJdbcUrl()
+//                    , SQLContainer.getUsername(), SQLContainer.getPassword());
+//            UserRepository userRepository = new JdbcUserRepositoryImpl(config);
+//            UserActionRepository userActionRepository = new JdbcUserActionRepositoryImpl(config);
+            //userService = new DatabaseUserServiceImpl(userRepository, userActionRepository);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,31 +89,17 @@ class DatabaseUserServiceImplTest {
     }
 
     @Test
-    @DisplayName("Вход пользователя в систему")
-    void signIn_SuccessfulSignIn() {
-        assertThat(userService.signIn("admin", "123")).isTrue();
-        assertThat(userService.getSessionUser()).isNotNull();
-    }
-
-    @Test
     @DisplayName("Вход с неправильным логином")
     void signIn_UserNotFound() {
-        assertThat(userService.signIn("empty", "123")).isFalse();
+        assertThat(userService.signInWithSession("empty", "123")).isEqualTo(null);
     }
 
     @Test
     @DisplayName("Вход с неправильным паролем")
     void signIn_IncorrectPassword() {
-        assertThat(userService.signIn("admin", "wrong_password")).isFalse();
+        assertThat(userService.signInWithSession("admin", "wrong_password")).isEqualTo(null);
     }
 
-    @Test
-    @DisplayName("Выход пользователя из системы")
-    void signOut_SuccessfulSignOut() {
-        userService.signIn("admin", "123");
-        userService.signOut();
-        assertThat(userService.getSessionUser()).isNull();
-    }
 
     @Test
     @DisplayName("Поиск пользователя по логину")
@@ -155,7 +140,7 @@ class DatabaseUserServiceImplTest {
     @DisplayName("Получение всех действий пользователя")
     void getUserActions_AllActions() {
         User user = mock(User.class);
-        when(user.getUserActions()).thenReturn(mock(Map.class));
+        //when(user.getUserActions()).thenReturn(mock(Map.class));
         assertThat(userService.getUserActions(user, null)).isNotNull();
     }
 
@@ -163,7 +148,7 @@ class DatabaseUserServiceImplTest {
     @DisplayName("Получение определенного действия пользователя")
     void getUserActions_SpecificAction() {
         User user = mock(User.class);
-        when(user.getUserActions()).thenReturn(mock(Map.class));
+        //when(user.getUserActions()).thenReturn(mock(Map.class));
         assertThat(userService.getUserActions(user, UserActionType.SIGN_IN)).isNotNull();
     }
 

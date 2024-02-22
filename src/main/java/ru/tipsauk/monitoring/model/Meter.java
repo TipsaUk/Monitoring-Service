@@ -1,17 +1,10 @@
 package ru.tipsauk.monitoring.model;
 
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-
 import java.util.Objects;
 
 /**
  * Класс, сущности вида счетчика в системе.
  */
-//@Getter
-//@Setter
-//@NoArgsConstructor
 public class Meter {
 
     /** id счетчика в системе. */

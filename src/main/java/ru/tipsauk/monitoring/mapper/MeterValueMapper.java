@@ -1,15 +1,15 @@
-package ru.tipsauk.monitoring.handler.mapper;
+package ru.tipsauk.monitoring.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import ru.tipsauk.monitoring.dto.MeterValueDto;
 import ru.tipsauk.monitoring.model.MeterValue;
 
-@Mapper
+/**
+ * Интерфейс-маппер для преобразования между сущностью MeterValue и DTO MeterValueDto.
+ */
+@Mapper(componentModel = "spring")
 public interface MeterValueMapper {
-
-    MeterValueMapper INSTANCE = Mappers.getMapper(MeterValueMapper.class);
 
     @Mapping(source = "dateValue", target = "dateValue")
     @Mapping(source = "meterValues", target = "meterValues")

@@ -1,8 +1,10 @@
 package ru.tipsauk.monitoring.repository.jdbcRepositoryImpl;
 
-import ru.tipsauk.monitoring.config.ApplicationConfig;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import ru.tipsauk.monitoring.model.User;
 import ru.tipsauk.monitoring.model.UserRole;
+import ru.tipsauk.monitoring.repository.DBConnection;
 import ru.tipsauk.monitoring.repository.UserRepository;
 
 import java.sql.*;
@@ -11,22 +13,11 @@ import java.util.ArrayList;
 /**
  * Реализация интерфейса UserRepository, с использованием взаимодействия с базой данных через JDBC.
  */
+@Repository
+@RequiredArgsConstructor
 public class JdbcUserRepositoryImpl implements UserRepository {
 
-    private final String url;
-    private final String username;
-    private final String password;
-
-    /**
-     * Конструктор, принимающий объект конфигурации для настройки подключения к базе данных.
-     *
-     * @param config объект конфигурации.
-     */
-    public JdbcUserRepositoryImpl(ApplicationConfig config) {
-        this.url = config.getDbUrl();
-        this.username = config.getDbUsername();
-        this.password = config.getDbPassword();
-    }
+    private final DBConnection dbConnection;
 
     /**
      * {@inheritDoc}
@@ -35,7 +26,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     public User getUserByName(String nickName) {
         User user = null;
         String sql = "SELECT * FROM monitoring.user WHERE nic_name = ? ";
-        try (PreparedStatement preparedStatement = setPreparedStatement(sql)) {
+        try (PreparedStatement preparedStatement = dbConnection.setPreparedStatement(sql)) {
             user = resultSetUserByName(nickName, preparedStatement);
         } catch (SQLException e) {
             System.out.println("Ошибка при получении пользователя: " + e.getMessage());
@@ -49,7 +40,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     @Override
     public void saveUser(User user) {
         String sql = "INSERT INTO monitoring.user (nic_name, password, role) VALUES (?, ?, ?)";
-        try (PreparedStatement preparedStatement = setPreparedStatement(sql)) {
+        try (PreparedStatement preparedStatement = dbConnection.setPreparedStatement(sql)) {
             preparedStatement.setString(1, user.getNickName());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setString(3, user.getRole().toString());
@@ -66,26 +57,12 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
         String sql = "SELECT * FROM monitoring.user";
-        try (PreparedStatement preparedStatement = setPreparedStatement(sql)) {
+        try (PreparedStatement preparedStatement = dbConnection.setPreparedStatement(sql)) {
             users = resultSetAllUsers(preparedStatement);
         } catch (SQLException e) {
             System.out.println("Ошибка при получении пользователя: " + e.getMessage());
         }
         return users;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
-    }
-
-    public PreparedStatement setPreparedStatement(String sql) throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Ошибка инициализации драйвера: " + e.getMessage());
-        }
-        Connection connection = getConnection();
-        return connection.prepareStatement(sql);
     }
 
     private User resultSetUserByName(String nickName

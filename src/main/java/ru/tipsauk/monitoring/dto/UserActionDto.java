@@ -1,6 +1,7 @@
 package ru.tipsauk.monitoring.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ public class UserActionDto implements Comparable<UserActionDto> {
     /**
      * Дата и время действия пользователя.
      */
+    @Schema(description = "Дата и время действия пользователя")
     @NotBlank(message = "Дата не может быть пустой")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private Date timeAction;
@@ -25,6 +27,7 @@ public class UserActionDto implements Comparable<UserActionDto> {
     /**
      * Тип действия пользователя.
      */
+    @Schema(description = "Тип действия пользователя")
     @NotEmpty(message = "Действие пользователя не может быть пустыми")
     @NotNull(message = "Действие пользователя не может быть пустыми")
     private UserActionType action;
@@ -32,6 +35,7 @@ public class UserActionDto implements Comparable<UserActionDto> {
     /**
      * Дополнительное описание действия.
      */
+    @Schema(description = "Дополнительное описание действия")
     private String description;
 
     /**

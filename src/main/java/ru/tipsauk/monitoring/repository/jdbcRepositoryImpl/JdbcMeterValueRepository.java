@@ -1,9 +1,11 @@
 package ru.tipsauk.monitoring.repository.jdbcRepositoryImpl;
 
-import ru.tipsauk.monitoring.config.ApplicationConfig;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import ru.tipsauk.monitoring.model.Meter;
 import ru.tipsauk.monitoring.model.MeterValue;
 import ru.tipsauk.monitoring.model.User;
+import ru.tipsauk.monitoring.repository.DBConnection;
 import ru.tipsauk.monitoring.repository.MeterValueRepository;
 
 import java.sql.*;
@@ -14,22 +16,11 @@ import java.util.TreeSet;
 /**
  * Реализация интерфейса MeterValueRepository, с использованием взаимодействия с базой данных через JDBC.
  */
+@Repository
+@RequiredArgsConstructor
 public class JdbcMeterValueRepository implements MeterValueRepository {
 
-    private final String url;
-    private final String username;
-    private final String password;
-
-    /**
-     * Конструктор, принимающий объект конфигурации для настройки подключения к базе данных.
-     *
-     * @param config объект конфигурации.
-     */
-    public JdbcMeterValueRepository(ApplicationConfig config) {
-        this.url = config.getDbUrl();
-        this.username = config.getDbUsername();
-        this.password = config.getDbPassword();
-    }
+    private final DBConnection dbConnection;
 
     /**
      * {@inheritDoc}
@@ -44,7 +35,7 @@ public class JdbcMeterValueRepository implements MeterValueRepository {
                 "AND mv.date_value = (SELECT MAX(date_value) FROM monitoring.meter_value " +
                 "                   WHERE user_id = mv.user_id) " +
                 "ORDER BY mv.date_value DESC";
-        try (PreparedStatement preparedStatement = setPreparedStatement(sql)) {
+        try (PreparedStatement preparedStatement = dbConnection.setPreparedStatement(sql)) {
             meterValue = resultSetValueMeter(user, preparedStatement);
         } catch (SQLException e) {
             System.out.println("Ошибка при получении актуальных записей счетчика: " + e.getMessage());
@@ -63,7 +54,7 @@ public class JdbcMeterValueRepository implements MeterValueRepository {
                     "JOIN monitoring.meter m ON mv.meter_id = m.id " +
                     "WHERE mv.date_value = ? AND mv.user_id = ? " +
                     "ORDER BY mv.date_value DESC ";
-            try (PreparedStatement preparedStatement = setPreparedStatement(sql)) {
+            try (PreparedStatement preparedStatement = dbConnection.setPreparedStatement(sql)) {
                 meterValue = resultSetValueMeterByDateAndUser(dateValue, user, preparedStatement);
         } catch (SQLException e) {
             System.out.println("Ошибка при получении записей счетчика: " + e.getMessage());
@@ -76,16 +67,14 @@ public class JdbcMeterValueRepository implements MeterValueRepository {
      */
     @Override
     public boolean saveMeterValue(Meter meter, int value, User user) {
-        try (Connection connection = getConnection()) {
-            String sql = "INSERT INTO meter_value (date_value, meter_id, user_id, value) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                LocalDateTime currentDateTime = LocalDateTime.now().withDayOfMonth(1);
-                preparedStatement.setTimestamp(1, Timestamp.valueOf(currentDateTime));
-                preparedStatement.setLong(2, meter.getId());
-                preparedStatement.setLong(3, user.getId());
-                preparedStatement.setInt(4, value);
-                preparedStatement.executeUpdate();
-            }
+        String sql = "INSERT INTO meter_value (date_value, meter_id, user_id, value) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = dbConnection.setPreparedStatement(sql)) {
+            LocalDateTime currentDateTime = LocalDateTime.now().withDayOfMonth(1);
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(currentDateTime));
+            preparedStatement.setLong(2, meter.getId());
+            preparedStatement.setLong(3, user.getId());
+            preparedStatement.setInt(4, value);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Ошибка при записи показаний счетчика: " + e.getMessage());
             return false;
@@ -104,21 +93,12 @@ public class JdbcMeterValueRepository implements MeterValueRepository {
                 "JOIN monitoring.meter m ON mv.meter_id = m.id " +
                 "WHERE mv.user_id = ? " +
                 "ORDER BY mv.date_value DESC ";
-        try (PreparedStatement preparedStatement = setPreparedStatement(sql)) {
+        try (PreparedStatement preparedStatement = dbConnection.setPreparedStatement(sql)) {
             meterValues = resultSetAllMeterValues(user, preparedStatement);
         } catch (SQLException e) {
             System.out.println("Ошибка при получении записей счетчиков: " + e.getMessage());
         }
         return meterValues;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
-    }
-
-    public PreparedStatement setPreparedStatement(String sql) throws SQLException {
-        Connection connection = getConnection();
-        return connection.prepareStatement(sql);
     }
 
     private MeterValue resultSetValueMeterByDateAndUser(LocalDate dateValue, User user

@@ -1,10 +1,11 @@
 package ru.tipsauk.monitoring.service.in;
 
+import ru.tipsauk.monitoring.dto.UserActionDto;
+import ru.tipsauk.monitoring.dto.UserDto;
 import ru.tipsauk.monitoring.model.User;
-import ru.tipsauk.monitoring.model.UserAction;
 import ru.tipsauk.monitoring.model.UserActionType;
 
-import java.util.ArrayList;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -22,15 +23,6 @@ public interface UserService {
     boolean signUp(String nickName, String password);
 
     /**
-     * Авторизует пользователя с указанным именем и паролем для реализации с консолью.
-     *
-     * @param name     имя пользователя для авторизации.
-     * @param password пароль пользователя для авторизации.
-     * @return true, если авторизация успешна, в противном случае - false.
-     */
-    boolean signIn(String name, String password);
-
-    /**
      * Авторизует пользователя с указанным именем и паролем для web-реализации.
      *
      * @param name     имя пользователя для авторизации.
@@ -38,11 +30,6 @@ public interface UserService {
      * @return true, если авторизация успешна, в противном случае - false.
      */
     String signInWithSession(String name, String password);
-
-    /**
-     * Выход из системы для текущего пользователя (для реализации с консолью).
-     */
-    void signOut();
 
     /**
      * Выход из системы по id текущей сессии (для реализации web).
@@ -78,14 +65,8 @@ public interface UserService {
      *
      * @return ArrayList объектов User, представляющих всех зарегистрированных пользователей.
      */
-    ArrayList<User> getAllUsers();
+    Set<UserDto> getAllUsers();
 
-    /**
-     * Получает текущего пользователя сессии.
-     *
-     * @return объект User, представляющий текущего пользователя сессии.
-     */
-    User getSessionUser();
 
     /**
      * Получает действия пользователя по заданному типу.
@@ -94,6 +75,6 @@ public interface UserService {
      * @param userAction тип действия пользователя или null - без отбора.
      * @return TreeSet объектов UserAction, представляющих действия пользователя указанного типа.
      */
-    TreeSet<UserAction> getUserActions(User user, UserActionType userAction);
+    TreeSet<UserActionDto> getUserActions(User user, UserActionType userAction);
 
 }

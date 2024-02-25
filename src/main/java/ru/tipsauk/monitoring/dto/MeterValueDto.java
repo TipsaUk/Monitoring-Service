@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.tipsauk.monitoring.model.Meter;
 
 import java.util.Date;
@@ -16,6 +19,9 @@ import java.util.Objects;
  * Класс, представляющий объект данных о показаниях счетчика.
  *
  */
+@Getter
+@Setter
+@NoArgsConstructor
 public class MeterValueDto implements Comparable<MeterValueDto> {
 
     /**
@@ -34,37 +40,8 @@ public class MeterValueDto implements Comparable<MeterValueDto> {
     @NotNull(message = "Показания не могут быть пустыми")
     private final Map<Meter, Integer> meterValues = new HashMap<>();
 
-    /**
-     * Конструктор без параметров для создания пустого объекта MeterValueDto.
-     */
-    public MeterValueDto() {
-    }
-
-    /**
-     * Получить текущую дату показаний.
-     *
-     * @return Дата показаний.
-     */
-    public Date getDateValue() {
-        return dateValue;
-    }
-
-    /**
-     * Установить новую дату показаний.
-     *
-     * @param dateValue Новая дата показаний.
-     */
-    public void setDateValue(Date dateValue) {
-        this.dateValue = dateValue;
-    }
-
-    /**
-     * Получить показания счетчиков.
-     *
-     * @return Показания счетчиков.
-     */
-    public Map<Meter, Integer> getMeterValues() {
-        return meterValues;
+    public void addMeterReading(Meter meter, Integer value) {
+        meterValues.put(meter, value);
     }
 
     @Override

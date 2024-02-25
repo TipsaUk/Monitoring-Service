@@ -2,7 +2,7 @@ package ru.tipsauk.monitoring.service.in.DatabaseServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.tipsauk.monitoring.annotations.Loggable;
+
 import ru.tipsauk.monitoring.dto.MeterDto;
 import ru.tipsauk.monitoring.dto.MeterValueDto;
 import ru.tipsauk.monitoring.mapper.MeterMapper;
@@ -13,6 +13,7 @@ import ru.tipsauk.monitoring.model.User;
 import ru.tipsauk.monitoring.repository.MeterRepository;
 import ru.tipsauk.monitoring.repository.MeterValueRepository;
 import ru.tipsauk.monitoring.service.in.MeterService;
+import ru.tipsauk.starter_logger.annotations.Loggable;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 /**
  * Реализация интерфейса MeterService с использованием базы данных для web-версии приложения.
  */
+
 @Loggable
 @Service
 @RequiredArgsConstructor
@@ -46,16 +48,6 @@ public class MeterServiceImpl implements MeterService {
                 .map(meterMapper::meterToMeterDto)
                 .collect(Collectors.toSet());
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean transmitMeterValue(User user, Meter meter, int value) {
-        // не используется в данной реализации
-        return false;
-    }
-
     /**
      * {@inheritDoc}
      */

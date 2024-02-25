@@ -66,7 +66,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return false;
         }
         if (requiredAdminMethods.contains(path) && !currentUser.isUserAdministrator()) {
-            response.setStatus(HttpServletResponse.SC_NON_AUTHORITATIVE_INFORMATION);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
         return true;

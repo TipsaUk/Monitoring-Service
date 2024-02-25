@@ -15,14 +15,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.tipsauk.monitoring.annotations.UserAudit;
 import ru.tipsauk.monitoring.dto.UserActionDto;
 import ru.tipsauk.monitoring.dto.UserDto;
 import ru.tipsauk.monitoring.exception.NotFoundException;
 import ru.tipsauk.monitoring.util.RequestUtils;
 import ru.tipsauk.monitoring.model.User;
-import ru.tipsauk.monitoring.model.UserActionType;
 import ru.tipsauk.monitoring.service.in.UserService;
+import ru.tipsauk.user_audit_starter.annotations.UserAudit;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -66,7 +65,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Ошибка во время входа пользователя")
     })
     @PostMapping("/login")
-    @UserAudit(actionType = UserActionType.SIGN_IN)
+    @UserAudit(actionType = "SIGN_IN")
     public ResponseEntity<String> signIn(@Valid @RequestBody UserDto userDto, HttpServletRequest request) {
         String sessionId = userService.signInWithSession(userDto.getNickName(), userDto.getPassword());
         if (sessionId == null) {
@@ -87,7 +86,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Ошибка во время выхода пользователя")
     })
     @PostMapping("/logout")
-    @UserAudit(actionType = UserActionType.SIGN_OUT)
+    @UserAudit(actionType = "SIGN_OUT")
     public ResponseEntity<String> signOut(HttpServletRequest request) {
         String sessionId = RequestUtils.getCurrentSessionId(request);
         return userService.signOutBySessionId(sessionId)
@@ -110,7 +109,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     })
     @GetMapping("/user-actions")
-    @UserAudit(actionType = UserActionType.GETTING_SYSTEM_INFO)
+    @UserAudit(actionType = "GETTING_SYSTEM_INFO")
     public ResponseEntity<TreeSet<UserActionDto>> getUserActions(
             @Parameter(description = "Имя пользователя") String username, HttpServletRequest request) {
         User user = userService.getUserByName(username);
@@ -133,17 +132,9 @@ public class UserController {
                     })
     })
     @GetMapping("/users")
-    @UserAudit(actionType = UserActionType.GETTING_SYSTEM_INFO)
+    @UserAudit(actionType = "GETTING_SYSTEM_INFO")
     public ResponseEntity<Set<UserDto>> getAllUsers(HttpServletRequest request) {
         return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
-    })
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 }

@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * Компонент для управления подключением к базе данных.
  */
 @Component
-public class DBConnection {
+public class DatabaseService {
 
     private Connection connection;
 
@@ -67,7 +67,7 @@ public class DBConnection {
      * @return PreparedStatement - подготовленное выражение.
      * @throws SQLException Если произошла ошибка при подготовке выражения.
      */
-    public PreparedStatement setPreparedStatement(String sql) throws SQLException {
+    public PreparedStatement createPreparedStatement(String sql) throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {

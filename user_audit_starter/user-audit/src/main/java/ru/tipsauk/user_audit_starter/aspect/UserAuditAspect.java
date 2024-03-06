@@ -1,18 +1,18 @@
-package ru.tipsauk.monitoring.aspect;
+package ru.tipsauk.user_audit_starter.aspect;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
-import ru.tipsauk.monitoring.annotations.UserAudit;
-import ru.tipsauk.monitoring.util.RequestUtils;
-import ru.tipsauk.monitoring.model.User;
-import ru.tipsauk.monitoring.repository.UserActionRepository;
-import ru.tipsauk.monitoring.service.in.UserService;
+import ru.tipsauk.user_audit_starter.annotations.UserAudit;
+import ru.tipsauk.user_audit_starter.event.UserAuditEvent;
 
 /**
  * Аспект для аудита пользовательских действий.
@@ -21,13 +21,12 @@ import ru.tipsauk.monitoring.service.in.UserService;
 @Slf4j
 @Aspect
 @Component
-@AllArgsConstructor
 public class UserAuditAspect {
 
-    private UserActionRepository userActionRepository;
-    private UserService userService;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
-    @Pointcut("execution(@ru.tipsauk.monitoring.annotations.UserAudit * *(..))")
+    @Pointcut("execution(@ru.tipsauk.user_audit_starter.annotations.UserAudit * *(..))")
     public void annotatedByUserAudit() {
 
     }
@@ -35,18 +34,19 @@ public class UserAuditAspect {
     @Around("annotatedByUserAudit() && @annotation(userAudit)")
     public Object logging(ProceedingJoinPoint proceedingJoinPoint, UserAudit userAudit) throws Throwable {
         log.info("Аудит пользователя " + proceedingJoinPoint.getSignature());
-        User user = extractUser(proceedingJoinPoint);
+        String sessionId = extractSessionId(proceedingJoinPoint);
         String description = extractDescription(proceedingJoinPoint);
-        if (user != null) {
-            userActionRepository.saveUserAction(user, userAudit.actionType(), description);
+        log.info("Аудит пользователя sessionId - " + sessionId);
+        if (sessionId != null && !sessionId.isEmpty()) {
+            eventPublisher.publishEvent(new UserAuditEvent(this, sessionId, userAudit.actionType(), description));
         }
         return proceedingJoinPoint.proceed();
     }
 
-    private User extractUser(ProceedingJoinPoint joinPoint) {
+    private String extractSessionId(ProceedingJoinPoint joinPoint) {
         for (Object arg : joinPoint.getArgs()) {
             if (arg instanceof HttpServletRequest) {
-                return userService.getUserBySessionId(RequestUtils.getCurrentSessionId((HttpServletRequest) arg));
+                return getCurrentSessionId((HttpServletRequest) arg);
             }
         }
         return null;
@@ -62,4 +62,9 @@ public class UserAuditAspect {
         return builder.toString();
     }
 
+    public static String getCurrentSessionId(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Object sessionIdAttribute = session.getAttribute("sessionId");
+        return (sessionIdAttribute != null) ? sessionIdAttribute.toString() : "";
+    }
 }

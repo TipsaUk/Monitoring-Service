@@ -225,7 +225,7 @@ class MeterControllerTest {
     void getValueMeterHistory_Success() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         when(userService.getUserByName(username)).thenReturn(user);
-        TreeSet<MeterValueDto> mockedMeterValueHistory = new TreeSet<>(); 
+        TreeSet<MeterValueDto> mockedMeterValueHistory = new TreeSet<>();
         when(meterService.getValueMeterHistory(user)).thenReturn(mockedMeterValueHistory);
         ResponseEntity<TreeSet<MeterValueDto>> response = meterController.getValueMeterHistory(username, request);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

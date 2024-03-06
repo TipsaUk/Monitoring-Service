@@ -2,13 +2,9 @@ spring:
   datasource:
     username: monitoring
     password: monitoring
-    url: jdbc:postgresql://localhost:5432/monitoring_service
+    url: jdbc:postgresql://localhost:5433/monitoring_service?loggerLevel=OFF
 
   liquibase:
     enabled: true
     change-log: db/changelog/changelog-master.xml
     default-schema: liquibase
-
-logging:
-  level:
-    root: info

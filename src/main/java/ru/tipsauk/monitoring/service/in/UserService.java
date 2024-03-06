@@ -67,7 +67,6 @@ public interface UserService {
      */
     Set<UserDto> getAllUsers();
 
-
     /**
      * Получает действия пользователя по заданному типу.
      *
@@ -76,5 +75,15 @@ public interface UserService {
      * @return TreeSet объектов UserAction, представляющих действия пользователя указанного типа.
      */
     TreeSet<UserActionDto> getUserActions(User user, UserActionType userAction);
+
+    /**
+     * Сохраняет действия пользователя в базе данных.
+     *
+     * @param userSessionId  сессия пользователя, действия которого сохраняем.
+     * @param userAction тип действия пользователя.
+     * @param description дополнительное описание действия.
+     * @return true, если успешна сохранен, в противном случае - false.
+     */
+    boolean saveUserAction(String userSessionId, String userAction, String description);
 
 }

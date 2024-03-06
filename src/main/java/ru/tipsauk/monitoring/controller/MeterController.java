@@ -1,6 +1,5 @@
 package ru.tipsauk.monitoring.controller;
 
-import com.sun.source.tree.Tree;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,22 +13,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.tipsauk.monitoring.annotations.UserAudit;
 import ru.tipsauk.monitoring.dto.MeterDto;
 import ru.tipsauk.monitoring.dto.MeterValueDto;
 import ru.tipsauk.monitoring.exception.NotFoundException;
 import ru.tipsauk.monitoring.util.RequestUtils;
 
 import ru.tipsauk.monitoring.model.User;
-import ru.tipsauk.monitoring.model.UserActionType;
 import ru.tipsauk.monitoring.service.in.MeterService;
 import ru.tipsauk.monitoring.service.in.UserService;
+import ru.tipsauk.user_audit_starter.annotations.UserAudit;
 
 
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.TreeSet;
-
 
 @Tag(
         name = "API для работы с счетчиками",
@@ -40,7 +37,14 @@ import java.util.TreeSet;
 @RequestMapping("meter")
 public class MeterController {
 
+    /**
+     * Сервис для работы с счетчиками.
+     */
     private final MeterService meterService;
+
+    /**
+     * Сервис для работы с пользователями.
+     */
     private final UserService userService;
 
     @Operation(
@@ -52,7 +56,7 @@ public class MeterController {
             }
     )
     @PostMapping("/add")
-    @UserAudit(actionType = UserActionType.ADDING_SYSTEM_INFO)
+    @UserAudit(actionType = "ADDING_SYSTEM_INFO")
     public ResponseEntity<String> addNewMeter(@Valid @RequestBody MeterDto meterDto, HttpServletRequest request) {
         return  meterService.addNewMeter(meterDto.getName())
                 ? ResponseEntity.ok("Successful addition!")
@@ -68,7 +72,7 @@ public class MeterController {
             }
     )
     @PostMapping("/transmit")
-    @UserAudit(actionType = UserActionType.TRANSMIT_VALUES)
+    @UserAudit(actionType = "TRANSMIT_VALUES")
     public ResponseEntity<String> transmitValue(@Valid @RequestBody MeterValueDto meterValueDto, HttpServletRequest request) {
         User currentUser = userService.getUserBySessionId(RequestUtils.getCurrentSessionId(request));
         return  meterService.transmitMeterValueWeb(currentUser, meterValueDto)
@@ -88,7 +92,7 @@ public class MeterController {
             }
     )
     @GetMapping("/meters")
-    @UserAudit(actionType = UserActionType.GETTING_SYSTEM_INFO)
+    @UserAudit(actionType = "GETTING_SYSTEM_INFO")
     public ResponseEntity<Set<MeterDto>> outPutMeters(HttpServletRequest request) {
         return ResponseEntity.ok(meterService.getAllMeters());
     }
@@ -105,7 +109,7 @@ public class MeterController {
             }
     )
     @GetMapping("/value")
-    @UserAudit(actionType = UserActionType.GETTING_VALUES)
+    @UserAudit(actionType = "GETTING_VALUES")
     public ResponseEntity<MeterValueDto> getMeterValues(
             @Parameter(description = "Дата показаний") LocalDate dateValue,
             @Parameter(description = "Имя пользователя") String username,
@@ -129,7 +133,7 @@ public class MeterController {
             }
     )
     @GetMapping("/actual-value")
-    @UserAudit(actionType = UserActionType.GETTING_VALUES)
+    @UserAudit(actionType = "GETTING_VALUES")
     public ResponseEntity<MeterValueDto> getActualMeterValues(
             @Parameter(description = "Имя пользователя") String username, HttpServletRequest request) {
         User user = userService.getUserByName(username);
@@ -154,25 +158,13 @@ public class MeterController {
             }
     )
     @GetMapping("/values")
-    @UserAudit(actionType = UserActionType.GETTING_VALUES)
+    @UserAudit(actionType = "GETTING_VALUES")
     public ResponseEntity<TreeSet<MeterValueDto>> getValueMeterHistory(String username, HttpServletRequest request) {
         User user = userService.getUserByName(username);
         if (user == null) {
             throw new NotFoundException("User not found: " + username);
         }
         return ResponseEntity.ok(meterService.getValueMeterHistory(user));
-    }
-
-    @Operation(
-            summary = "Обработка ошибки NotFound",
-            description = "API для обработки ошибки NotFound",
-            responses = {
-                    @ApiResponse(responseCode = "404", description = "Ресурс не найден")
-            }
-    )
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 }
